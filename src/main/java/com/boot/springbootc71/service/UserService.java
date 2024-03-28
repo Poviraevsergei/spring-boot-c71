@@ -14,37 +14,38 @@ import java.util.Optional;
 @Service
 public class UserService {
     private final UserRepository userRepository;
-    private final User user;
 
     @Autowired
-    public UserService(UserRepository userRepository, User user) {
+    public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.user = user;
     }
 
     public List<User> getAllUsers() {
-        return userRepository.findAll();
+        return userRepository.customGetAllUsers();
     }
 
     public Optional<User> getUserById(Long id) {
-        return Optional.ofNullable(userRepository.findById(id));
+        return userRepository.findById(id);
     }
 
     public Boolean deleteUserById(Long id) {
-        return userRepository.deleteUser(id);
+        userRepository.deleteById(id);
+        return getUserById(id).isEmpty();
     }
 
     public Boolean createUser(UserCreateDto userFromDto) {
+        User user = new User();
         user.setUserPassword(userFromDto.getUserPassword());
         user.setUsername(userFromDto.getUsername());
         user.setAge(userFromDto.getAge());
         user.setCreated(Timestamp.valueOf(LocalDateTime.now()));
         user.setChanged(Timestamp.valueOf(LocalDateTime.now()));
-        return userRepository.createUser(user);
+        User createdUser = userRepository.save(user);
+        return getUserById(createdUser.getId()).isPresent();
     }
 
     public Boolean updateUser(Long id, String username, String password, Integer age) {
-        Optional<User> userFromDBOptional = Optional.ofNullable(userRepository.findById(id));
+        Optional<User> userFromDBOptional = userRepository.findById(id);
         if (userFromDBOptional.isPresent()){
             User userFromDB = userFromDBOptional.get();
             if (username != null) {
@@ -57,7 +58,8 @@ public class UserService {
                 userFromDB.setAge(age);
             }
             userFromDB.setChanged(Timestamp.valueOf(LocalDateTime.now()));
-            return userRepository.updateUser(userFromDB);
+            User updatedUser = userRepository.saveAndFlush(userFromDB);
+            return userFromDB.equals(updatedUser);
         }
         return false;
     }

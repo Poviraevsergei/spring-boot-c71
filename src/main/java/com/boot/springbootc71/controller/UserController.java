@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
@@ -55,9 +54,8 @@ public class UserController {
         return "empty";
     }
 
-    @ModelAttribute
     @PostMapping
-    public String createUser(@Valid UserCreateDto user, BindingResult bindingResult, HttpServletResponse response) {
+    public String createUser(@ModelAttribute @Valid UserCreateDto user, BindingResult bindingResult, HttpServletResponse response) {
         if (bindingResult.hasErrors()) {
             throw new CustomValidException(bindingResult.getAllErrors().toString());
         }
