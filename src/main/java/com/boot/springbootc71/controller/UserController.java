@@ -55,8 +55,9 @@ public class UserController {
         return "empty";
     }
 
+    @ModelAttribute
     @PostMapping
-    public String createUser(@ModelAttribute @Valid UserCreateDto user, BindingResult bindingResult, HttpServletResponse response) {
+    public String createUser(@Valid UserCreateDto user, BindingResult bindingResult, HttpServletResponse response) {
         if (bindingResult.hasErrors()) {
             throw new CustomValidException(bindingResult.getAllErrors().toString());
         }
