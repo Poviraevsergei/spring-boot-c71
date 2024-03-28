@@ -1,7 +1,9 @@
 package com.boot.springbootc71.model;
 
+import com.boot.springbootc71.Days;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
@@ -43,4 +45,8 @@ public class User {
     @Column(name = "changed")
     @Temporal(TemporalType.TIMESTAMP)
     private Timestamp changed;
+
+/*    @Enumerated
+    @Column(name = "changed") //в БД это тип varchar/text
+    private Days days;*/
 }
