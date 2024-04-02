@@ -42,6 +42,25 @@ public class UserController {
         return modelAndView;
     }
 
+    @GetMapping("/sort/{field}")
+    public ModelAndView getAllUsersAndSortByField(ModelAndView modelAndView, @PathVariable String field) {
+        List<User> users = userService.getUsersAndSortByField(field);
+        modelAndView.setViewName(users.isEmpty() ? "empty" : "get_users");
+        modelAndView.addObject("users", users);
+        modelAndView.setStatus(HttpStatusCode.valueOf(200));
+        return modelAndView;
+    }
+
+    @GetMapping("/paging/{size}/{page}")
+    public ModelAndView getAllUsersAndSortByField(ModelAndView modelAndView, @PathVariable Integer size,@PathVariable Integer page) {
+        List<User> users = userService.getUsersWithPagination(size,page);
+        modelAndView.setViewName(users.isEmpty() ? "empty" : "get_users");
+        modelAndView.addObject("users", users);
+        modelAndView.setStatus(HttpStatusCode.valueOf(200));
+        return modelAndView;
+    }
+
+
     @GetMapping("/{id}")
     public String getUserById(@PathVariable("id") Long id, ModelMap modelMap, HttpServletResponse response) { //@PathVariable если мы хотим достать из пути
         Optional<User> user = userService.getUserById(id);
@@ -52,6 +71,12 @@ public class UserController {
         }
         response.setStatus(404);
         return "empty";
+    }
+
+    @GetMapping("/test")
+    public String test() throws Exception {
+        userService.second();
+        return "success";
     }
 
     @PostMapping

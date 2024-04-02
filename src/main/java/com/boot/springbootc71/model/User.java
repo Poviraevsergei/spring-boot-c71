@@ -1,9 +1,7 @@
 package com.boot.springbootc71.model;
 
-import com.boot.springbootc71.Days;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
@@ -12,7 +10,6 @@ import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
@@ -46,7 +43,4 @@ public class User {
     @Temporal(TemporalType.TIMESTAMP)
     private Timestamp changed;
 
-/*    @Enumerated
-    @Column(name = "changed") //в БД это тип varchar/text
-    private Days days;*/
 }
