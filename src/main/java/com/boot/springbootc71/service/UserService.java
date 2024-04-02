@@ -44,18 +44,18 @@ public class UserService {
         return getUserById(createdUser.getId()).isPresent();
     }
 
-    public Boolean updateUser(Long id, String username, String password, Integer age) {
-        Optional<User> userFromDBOptional = userRepository.findById(id);
+    public Boolean updateUser(User user) {
+        Optional<User> userFromDBOptional = userRepository.findById(user.getId());
         if (userFromDBOptional.isPresent()){
             User userFromDB = userFromDBOptional.get();
-            if (username != null) {
-                userFromDB.setUsername(username);
+            if (user.getUsername() != null) {
+                userFromDB.setUsername(user.getUsername());
             }
-            if (password != null) {
-                userFromDB.setUserPassword(password);
+            if (user.getUserPassword() != null) {
+                userFromDB.setUserPassword(user.getUserPassword());
             }
-            if (age != null){
-                userFromDB.setAge(age);
+            if (user.getAge() != null){
+                userFromDB.setAge(user.getAge());
             }
             userFromDB.setChanged(Timestamp.valueOf(LocalDateTime.now()));
             User updatedUser = userRepository.saveAndFlush(userFromDB);
