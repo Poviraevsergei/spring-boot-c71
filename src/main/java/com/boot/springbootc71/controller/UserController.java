@@ -5,6 +5,7 @@ import com.boot.springbootc71.model.User;
 import com.boot.springbootc71.model.dto.UserCreateDto;
 import com.boot.springbootc71.service.UserService;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,10 +22,10 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @RestController
 @RequestMapping("/user")
 public class UserController {
-    //Jackson - библиотека которая преоразует обькты в JSON и наоборот
 
     private final UserService userService;
 
@@ -35,6 +36,7 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
+        log.info("Start method getAllUsers()");
         return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
     }
 
