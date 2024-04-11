@@ -1,5 +1,6 @@
 package com.boot.springbootc71.service;
 
+import com.boot.springbootc71.aop.TimeAop;
 import com.boot.springbootc71.model.User;
 import com.boot.springbootc71.model.dto.UserCreateDto;
 import com.boot.springbootc71.repository.UserRepository;
@@ -20,17 +21,23 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
+    @TimeAop
     public List<User> getAllUsers() {
         return userRepository.customGetAllUsers();
     }
 
+    @TimeAop
     public Optional<User> getUserById(Long id) {
         return userRepository.findById(id);
     }
 
     public Boolean deleteUserById(Long id) {
+        Optional<User> userCheck = getUserById(id);
+        if (userCheck.isEmpty()){
+            return false;
+        }
         userRepository.deleteById(id);
-        return getUserById(id).isEmpty();
+        return userRepository.findById(id).isEmpty();
     }
 
     public Boolean createUser(UserCreateDto userFromDto) {

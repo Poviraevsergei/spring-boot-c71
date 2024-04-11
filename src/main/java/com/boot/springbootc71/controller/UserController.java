@@ -4,6 +4,13 @@ import com.boot.springbootc71.exception.CustomValidException;
 import com.boot.springbootc71.model.User;
 import com.boot.springbootc71.model.dto.UserCreateDto;
 import com.boot.springbootc71.service.UserService;
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,18 +43,26 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
-        log.info("Start method getAllUsers()");
         return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
     }
 
+    @Operation(summary = "отдает юзера из базы данных по id")
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable("id") Long id) {
+    @ApiResponses({
+            @ApiResponse(responseCode = "404", description = "значит юзер не найден"),
+            @ApiResponse(responseCode = "200", description = "юзер найден и отправлен в ответе"),
+            @ApiResponse(responseCode = "500", description = "что-то у нас сломалось"),
+    })
+    public ResponseEntity<User> getUserById(@PathVariable("id") @Parameter(description = "id пользователя которого ищем") Long id) {
+        log.info("IN getUserById ");
         Optional<User> user = userService.getUserById(id);
         if (user.isPresent()) {
             return new ResponseEntity<>(user.get(), HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+
+    {log.info("Hi");}
 
     @PostMapping
     public ResponseEntity<HttpStatus> createUser(@RequestBody @Valid UserCreateDto user, BindingResult bindingResult) {
@@ -62,6 +77,7 @@ public class UserController {
         return new ResponseEntity<>(userService.updateUser(user) ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
     }
 
+    @Tag(name = "delete metods")
     @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> deleteUserById(@PathVariable("id") Long id) {
         return new ResponseEntity<>(userService.deleteUserById(id) ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);

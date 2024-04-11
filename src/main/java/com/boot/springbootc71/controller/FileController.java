@@ -1,5 +1,7 @@
 package com.boot.springbootc71.controller;
 
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -23,6 +25,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
+@Hidden
 @RestController
 @RequestMapping("/file")
 public class FileController {
@@ -67,6 +70,7 @@ public class FileController {
         return new ResponseEntity<>(new ArrayList<>(), HttpStatus.CONFLICT);
     }
 
+    @Tag(name = "delete metods")
     @DeleteMapping("/{filename}")
     public ResponseEntity<HttpStatus> deleteFile(@PathVariable String filename) {
         Path path = ROOT_FILE_PATH.resolve(filename);
