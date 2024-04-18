@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,6 +48,12 @@ public class UserController {
         return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
+    @GetMapping("/info")
+    public ResponseEntity<User> getInfoAboutCurrentUser(Principal principal){
+        return new ResponseEntity<>(userService.getInfoAboutCurrentUser(principal.getName()), HttpStatus.OK);
+    }
+
     @Operation(summary = "отдает юзера из базы данных по id")
     @GetMapping("/{id}")
     @ApiResponses({
@@ -53,6 +61,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "юзер найден и отправлен в ответе"),
             @ApiResponse(responseCode = "500", description = "что-то у нас сломалось"),
     })
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<User> getUserById(@PathVariable("id") @Parameter(description = "id пользователя которого ищем") Long id) {
         log.info("IN getUserById ");
         Optional<User> user = userService.getUserById(id);
@@ -61,8 +70,6 @@ public class UserController {
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
-
-    {log.info("Hi");}
 
     @PostMapping
     public ResponseEntity<HttpStatus> createUser(@RequestBody @Valid UserCreateDto user, BindingResult bindingResult) {
@@ -77,7 +84,7 @@ public class UserController {
         return new ResponseEntity<>(userService.updateUser(user) ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
     }
 
-    @Tag(name = "delete metods")
+    @Tag(name = "delete methods")
     @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> deleteUserById(@PathVariable("id") Long id) {
         return new ResponseEntity<>(userService.deleteUserById(id) ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);

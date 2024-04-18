@@ -5,6 +5,7 @@ import com.boot.springbootc71.model.User;
 import com.boot.springbootc71.model.dto.UserCreateDto;
 import com.boot.springbootc71.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -24,6 +25,11 @@ public class UserService {
     @TimeAop
     public List<User> getAllUsers() {
         return userRepository.customGetAllUsers();
+    }
+
+    public User getInfoAboutCurrentUser(String username){
+        System.out.println("Second example: " + SecurityContextHolder.getContext().getAuthentication().getName());
+        return userRepository.getUserByUsername(username);
     }
 
     @TimeAop

@@ -11,4 +11,6 @@ import java.util.List;
 public interface UserRepository extends JpaRepository<User, Long> {
     @Query(nativeQuery = true, value = "SELECT * FROM users")
     List<User> customGetAllUsers();
+
+    User getUserByUsername(String username);
 }
