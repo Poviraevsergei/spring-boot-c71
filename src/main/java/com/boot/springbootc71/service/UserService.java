@@ -4,6 +4,8 @@ import com.boot.springbootc71.aop.TimeAop;
 import com.boot.springbootc71.model.User;
 import com.boot.springbootc71.model.dto.UserCreateDto;
 import com.boot.springbootc71.repository.UserRepository;
+import com.boot.springbootc71.security.model.UserSecurity;
+import com.boot.springbootc71.security.repository.UserSecurityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -16,10 +18,12 @@ import java.util.Optional;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final UserSecurityRepository userSecurityRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, UserSecurityRepository userSecurityRepository) {
         this.userRepository = userRepository;
+        this.userSecurityRepository = userSecurityRepository;
     }
 
     @TimeAop
@@ -27,9 +31,12 @@ public class UserService {
         return userRepository.customGetAllUsers();
     }
 
-    public User getInfoAboutCurrentUser(String username){
-        System.out.println("Second example: " + SecurityContextHolder.getContext().getAuthentication().getName());
-        return userRepository.getUserByUsername(username);
+    public Optional<User> getInfoAboutCurrentUser(String username){
+       Optional<UserSecurity> userSecurity = userSecurityRepository.findByUserLogin(username);
+       if (userSecurity.isEmpty()){
+           return Optional.empty();
+       }
+       return userRepository.findById(userSecurity.get().getUserId());
     }
 
     @TimeAop
@@ -48,7 +55,6 @@ public class UserService {
 
     public Boolean createUser(UserCreateDto userFromDto) {
         User user = new User();
-        user.setUserPassword(userFromDto.getUserPassword());
         user.setUsername(userFromDto.getUsername());
         user.setAge(userFromDto.getAge());
         user.setCreated(Timestamp.valueOf(LocalDateTime.now()));
@@ -63,9 +69,6 @@ public class UserService {
             User userFromDB = userFromDBOptional.get();
             if (user.getUsername() != null) {
                 userFromDB.setUsername(user.getUsername());
-            }
-            if (user.getUserPassword() != null) {
-                userFromDB.setUserPassword(user.getUserPassword());
             }
             if (user.getAge() != null){
                 userFromDB.setAge(user.getAge());

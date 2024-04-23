@@ -3,6 +3,7 @@ package com.boot.springbootc71.controller;
 import com.boot.springbootc71.exception.CustomValidException;
 import com.boot.springbootc71.model.User;
 import com.boot.springbootc71.model.dto.UserCreateDto;
+import com.boot.springbootc71.security.model.UserSecurity;
 import com.boot.springbootc71.service.UserService;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
@@ -48,10 +49,14 @@ public class UserController {
         return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN','USER')")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping("/info")
     public ResponseEntity<User> getInfoAboutCurrentUser(Principal principal){
-        return new ResponseEntity<>(userService.getInfoAboutCurrentUser(principal.getName()), HttpStatus.OK);
+        Optional<User> result = userService.getInfoAboutCurrentUser(principal.getName());
+        if (result.isEmpty()){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @Operation(summary = "отдает юзера из базы данных по id")

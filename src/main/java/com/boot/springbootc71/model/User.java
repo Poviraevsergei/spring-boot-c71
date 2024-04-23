@@ -29,9 +29,6 @@ public class User {
     @Column(name = "username", unique = true)
     private String username;
 
-    @Column(name = "user_password")
-    private String userPassword;
-
     @Column(name = "age")
     private Integer age;
 
@@ -42,8 +39,4 @@ public class User {
     @Column(name = "changed")
     @Temporal(TemporalType.TIMESTAMP)
     private Timestamp changed;
-
-/*    @Enumerated
-    @Column(name = "changed") //в БД это тип varchar/text
-    private Days days;*/
 }

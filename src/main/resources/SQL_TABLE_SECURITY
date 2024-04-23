@@ -1,0 +1,45 @@
+create table public.users
+(
+    id       bigint  default nextval('users_id_seq'::regclass) not null
+        constraint users_pk
+            primary key,
+    username varchar(100)                                      not null,
+    created  timestamp(6)                                      not null,
+    changed  timestamp(6),
+    age      integer default 18
+);
+
+alter table public.users
+    owner to postgres;
+
+create trigger trigger_users
+    after insert or update or delete
+    on public.users
+    for each row
+execute procedure public.add_to_log();
+
+create table public.user_security
+(
+    id            bigint       default nextval('user_security_id_seq'::regclass) not null
+        primary key,
+    is_blocked    boolean      default false                                     not null,
+    role          varchar(255) default 'USER'::character varying
+        constraint user_security_role_check
+            check ((role)::text = ANY ((ARRAY ['USER'::character varying, 'ADMIN'::character varying])::text[])),
+    user_id       bigint                                                         not null
+        constraint user_security_users_id_fk
+            references public.users
+            on update cascade on delete cascade,
+    user_login    varchar(255)                                                   not null,
+    user_password varchar(255)                                                   not null
+);
+
+alter table public.user_security
+    owner to postgres;
+
+create unique index user_security_user_id_uindex
+    on public.user_security (user_id);
+
+create unique index user_security_user_login_uindex
+    on public.user_security (user_login);
+
