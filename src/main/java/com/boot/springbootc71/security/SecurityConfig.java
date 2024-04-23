@@ -34,6 +34,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers(new AntPathRequestMatcher("/user", "GET")).hasRole("ADMIN")
+                                .requestMatchers(new AntPathRequestMatcher("/security/registration", "POST")).permitAll()
+                                .requestMatchers(new AntPathRequestMatcher("/admin", "POST")).hasRole("ADMIN")
                                 .anyRequest().authenticated())
                 .userDetailsService(customUserDetailService)
                 .httpBasic(Customizer.withDefaults())
