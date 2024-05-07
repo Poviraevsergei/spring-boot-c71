@@ -5,6 +5,7 @@ import com.boot.springbootc71.model.User;
 import com.boot.springbootc71.repository.UserRepository;
 import com.boot.springbootc71.security.model.Roles;
 import com.boot.springbootc71.security.model.UserSecurity;
+import com.boot.springbootc71.security.model.dto.AuthRequestDto;
 import com.boot.springbootc71.security.model.dto.RegistrationDto;
 import com.boot.springbootc71.security.repository.UserSecurityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,15 +21,16 @@ import java.util.Optional;
 public class UserSecurityService {
 
     private final PasswordEncoder passwordEncoder;
-
     private final UserSecurityRepository userSecurityRepository;
     private final UserRepository userRepository;
+    private final JwtUtils jwtUtils;
 
     @Autowired
-    public UserSecurityService(PasswordEncoder passwordEncoder, UserSecurityRepository userSecurityRepository, UserRepository userRepository) {
+    public UserSecurityService(PasswordEncoder passwordEncoder, UserSecurityRepository userSecurityRepository, UserRepository userRepository, JwtUtils jwtUtils) {
         this.passwordEncoder = passwordEncoder;
         this.userSecurityRepository = userSecurityRepository;
         this.userRepository = userRepository;
+        this.jwtUtils = jwtUtils;
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -51,5 +53,14 @@ public class UserSecurityService {
         userSecurity.setUserId(savedUser.getId());
         userSecurity.setIsBlocked(false);
         userSecurityRepository.save(userSecurity);
+    }
+
+    public Optional<String> generateToken(AuthRequestDto authRequestDto) {
+        Optional<UserSecurity> security = userSecurityRepository.findByUserLogin(authRequestDto.getLogin());
+        if (security.isPresent()
+                && passwordEncoder.matches(authRequestDto.getPassword(), security.get().getUserPassword())) {
+            return Optional.of(jwtUtils.generateJwtToken(authRequestDto.getLogin()));
+        }
+        return Optional.empty();
     }
 }

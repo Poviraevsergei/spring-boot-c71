@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +33,7 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
+@SecurityRequirement(name = "Bearer Authentication")
 @Slf4j
 @RestController
 @RequestMapping("/user")
@@ -49,7 +51,6 @@ public class UserController {
         return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping("/info")
     public ResponseEntity<User> getInfoAboutCurrentUser(Principal principal){
         Optional<User> result = userService.getInfoAboutCurrentUser(principal.getName());

@@ -27,7 +27,6 @@ public class UserRepositoryTest {
         user.setCreated(Timestamp.valueOf(LocalDateTime.now()));
         user.setChanged(Timestamp.valueOf(LocalDateTime.now()));
         user.setUsername("USERNAME");
-        user.setUserPassword("PASSWORD");
     }
 
     @Test

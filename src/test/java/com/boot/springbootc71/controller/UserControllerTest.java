@@ -2,6 +2,7 @@ package com.boot.springbootc71.controller;
 
 import com.boot.springbootc71.model.User;
 import com.boot.springbootc71.model.dto.UserCreateDto;
+import com.boot.springbootc71.security.filter.JwtFilter;
 import com.boot.springbootc71.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -30,7 +32,7 @@ import java.util.List;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(value = UserController.class)
-//@AutoConfigureMockMvc(addFilters = false)
+@AutoConfigureMockMvc(addFilters = false)
 public class UserControllerTest {
 
     @MockBean
@@ -42,8 +44,8 @@ public class UserControllerTest {
     @Autowired
     ObjectMapper objectMapper;
 
-    /*  @MockBean
-    private JwtAuthenticationFilter jwtAuthenticationFilter; TODO: after security */
+    @MockBean
+    private JwtFilter jwtAuthenticationFilter;
 
     static List<User> users = new ArrayList<>();
     static User user = new User();
@@ -92,12 +94,6 @@ public class UserControllerTest {
     void updateUserTest_IsNoContent() throws Exception {
         Mockito.when(userService.updateUser(any())).thenReturn(true);
 
-        /*
-        If updateUser is void:
-                UserService mockUS = Mockito.mock(UserService.class);
-                Mockito.doNothing().when(mockUS).updateUser(any());
-         */
-
         mockMvc.perform(put("/user")
                         .content(objectMapper.writeValueAsString(user))
                         .contentType(MediaType.APPLICATION_JSON))
@@ -111,14 +107,4 @@ public class UserControllerTest {
         mockMvc.perform(delete("/user/10"))
                 .andExpect(status().isNoContent());
     }
-
-/*    @Test TODO:Validation Exception
-    void createUserTest_UsernameIsNotEnough_ThrowError() throws Exception {
-        Mockito.when(userService.createUser(any())).thenReturn(true);
-        userCreateDto.setUsername("TEST");
-        mockMvc.perform(post("/user")
-                        .content(objectMapper.writeValueAsString(userCreateDto))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isConflict());
-    }*/
 }

@@ -5,9 +5,8 @@ import org.springframework.stereotype.Component;
 
 @Data
 @Component
-public class RegistrationDto {
+public class AuthRequestDto {
     private String login;
     private String password;
-    private String username;
-    private Integer age;
 }
+

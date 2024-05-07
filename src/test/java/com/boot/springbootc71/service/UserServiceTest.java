@@ -11,10 +11,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
@@ -30,7 +34,7 @@ public class UserServiceTest {
     @BeforeAll
     public static void beforeAll() {
         user.setId(5L);
-/*         Authentication authenticationMock = Mockito.mock(Authentication.class);
+   /*      Authentication authenticationMock = Mockito.mock(Authentication.class);
         SecurityContext securityContextMock = Mockito.mock(SecurityContext.class);
         Mockito.when(securityContextMock.getAuthentication()).thenReturn(authenticationMock);
         SecurityContextHolder.setContext(securityContextMock);*/
@@ -53,6 +57,7 @@ public class UserServiceTest {
 
     @Test
     void deleteUserById_Success() {
+        Mockito.when(userService.getUserById(anyLong())).thenReturn(Optional.of(user));
         userService.deleteUserById(132L);
 
         Mockito.verify(repository, Mockito.times(1)).deleteById(anyLong());
